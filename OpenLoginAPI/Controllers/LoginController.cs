@@ -29,13 +29,20 @@ namespace OpenLoginAPI.Controllers
             {
                 try
                 {
-                    var result = from user in _context.UserRegistration
-                             where user.Username == model.UserName && user.Password == model.Password
-                             select user;
+                    //var result = from user in _context.UserRegistration
+                    //where user.Username == model.UserName && user.Password == model.Password
+                    //select user;
+
+                    if (_context.UserRegistration.Any(user => user.Username == model.UserName && user.Password == model.Password)) 
+                    {
+                        return new JsonResult("Login Successfully");
+                    }
+
+
 
                     // return Ok(new Response { Status = "Success", Message = "Login Successfully" });
-                    return new JsonResult("Login Successfully");
-                }
+                    //return new JsonResult("Login Successfully");
+                }   
                 //catches any server error
                 catch (Exception ex)
                 {
