@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 using OpenLoginAPI.Data;
 using System;
 using System.Collections.Generic;
@@ -31,11 +32,24 @@ namespace OpenLoginAPI
                     options.UseSqlServer(Configuration.GetConnectionString("AppDBContext")));
 
             services.AddControllers();
+
+            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+                .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+            //Registers Cross-Resource Sharing service
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Enable CORS
+            app.UseCors(options =>
+            options.WithOrigins("http://localhost:4200")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

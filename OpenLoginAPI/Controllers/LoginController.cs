@@ -23,27 +23,29 @@ namespace OpenLoginAPI.Controllers
        
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<JsonResult> Login([FromBody] LoginModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var rx = from x in _context.UserRegistration
-                             where x.Username == model.UserName && x.Password == model.Password
-                             select x;
+                    var result = from user in _context.UserRegistration
+                             where user.Username == model.UserName && user.Password == model.Password
+                             select user;
 
-                    //_context.UserRegistration.FirstOrDefault(model.UserName == "admin" && model.Password == "admin");
-                    return Ok(new Response { Status = "Success", Message = "Login Successfully" });
+                    // return Ok(new Response { Status = "Success", Message = "Login Successfully" });
+                    return new JsonResult("Login Successfully");
                 }
+                //catches any server error
                 catch (Exception ex)
                 {
-                    var exa = ex.Message;
+                    var message = ex.Message;
+                    //return message;
                 }
                
             }
-            
-            return Unauthorized();
+            //return Unauthorized();
+            return new JsonResult("Login Failed");
         }
     }
 }
